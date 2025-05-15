@@ -53,24 +53,6 @@ This will open the Swagger UI for testing the API.
 
    http://localhost:5000/swagger
 
-## Running Tests
-
-Tests are automatically executed during the Docker build process. To run tests manually:
-
-1. Navigate to the `HackerNewsTests` directory:
-```sh
-	cd HackerNewsTests
-```
-2. Run the tests:
-```sh
-	dotnet test
-```
-## Notes
-
-- The Docker build process includes running tests. If any test fails, the build will stop.
-- Swagger UI is available in both Docker and local environments for easy API testing.
-- Rate limiting is implemented using Polly to handle API request limits gracefully.
-
 ---
 
 ## Suggestions for Improvement

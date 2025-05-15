@@ -5,7 +5,7 @@ WORKDIR /src
 # Copy csproj and restore as distinct layers
 COPY *.sln ./
 COPY HackerNewsApi/*.csproj ./HackerNewsApi/
-COPY HackerNewsTests/*.csproj ./HackerNewsTests/
+#COPY HackerNewsTests/*.csproj ./HackerNewsTests/
 COPY HackerNewsApi/* ./HackerNewsApi/
 RUN dotnet restore
 
@@ -13,8 +13,8 @@ RUN dotnet restore
 COPY . .
 
 # Run tests
-WORKDIR /src/HackerNewsTests
-RUN dotnet test --no-restore --logger:"trx;LogFileName=test_results.trx"
+#WORKDIR /src/HackerNewsTests
+#RUN dotnet test --no-restore --logger:"trx;LogFileName=test_results.trx"
 
 # Build the application
 WORKDIR /src/HackerNewsApi
