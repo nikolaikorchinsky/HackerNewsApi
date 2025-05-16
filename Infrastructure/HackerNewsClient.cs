@@ -68,6 +68,7 @@ public class HackerNewsClient : IHackerNewsClient
 
             return await response.Content.ReadFromJsonAsync<Story>(cancellationToken);
         }
+        catch (RateLimitRejectedException ex)
         catch (OperationCanceledException)
         {
             _logger.LogWarning("Request for story IDs was canceled by the user.");
