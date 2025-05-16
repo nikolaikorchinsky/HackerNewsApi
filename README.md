@@ -28,7 +28,7 @@ Before running the application, ensure you have the following installed:
 3. **Access the API**  
    Open your browser and navigate to:
 
-   http://localhost:8080/swagger
+   http://localhost:8080
 
 This will open the Swagger UI for testing the API.
 
@@ -46,12 +46,12 @@ This will open the Swagger UI for testing the API.
 3. **Run the Application**  
    Start the application by running:
 ```sh
-   dotnet run --project HackerNewsApi
+   dotnet run --urls="http://localhost:5000"
 ```
 4. **Access the API**  
    By default, the API will be available at:
 
-   http://localhost:5000/swagger
+   http://localhost:5000
 
 ---
 
