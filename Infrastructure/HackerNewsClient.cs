@@ -64,7 +64,7 @@ public class HackerNewsClient : IHackerNewsClient
             var url = $"{_options.BaseUrl}{string.Format(_options.ItemEndpoint, id)}";
             var response = await _httpClient.GetAsync(url, cancellationToken);
 
-            response.EnsureSuccessStatusCode(); // Проверяем, что статус ответа 200-299
+            response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<Story>(cancellationToken);
         }
