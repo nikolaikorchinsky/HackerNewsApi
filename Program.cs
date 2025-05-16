@@ -16,6 +16,8 @@ builder.Services.AddTransient<RequestLoggingMiddleware>();
 builder.Services.Configure<HackerNewsOptions>(builder.Configuration.GetSection("HackerNewsApi"));
 builder.Services.Configure<CacheOptions>(builder.Configuration.GetSection("CacheSettings"));
 builder.Services.Configure<RateLimitOptions>(builder.Configuration.GetSection("RateLimit"));
+builder.Services.AddOptions<RateLimitOptions>()
+    .Validate(options => options.SemaphoreLimit > 0, "SemaphoreLimit must be greater than 0");
 
 builder.Services.AddMemoryCache();
 
@@ -64,7 +66,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "HackerNews API v1");
-        c.RoutePrefix = "swagger";
+        c.RoutePrefix = "";
     });
 }
 

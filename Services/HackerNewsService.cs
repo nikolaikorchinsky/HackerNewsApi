@@ -14,17 +14,20 @@ public class HackerNewsService : IHackerNewsService
     private readonly IHackerNewsClient _client;
     private readonly IMemoryCache _memoryCache;
     private readonly CacheOptions _cacheOptions;
+    private readonly RateLimitOptions _rateLimitOptions;
     private readonly IMapper _mapper;
 
     public HackerNewsService(
         IHackerNewsClient client,
         IMemoryCache memoryCache,
         IOptions<CacheOptions> cacheOptions,
+        IOptions<RateLimitOptions> rateLimitOptions,
         IMapper mapper)
     {
         _client = client;
         _memoryCache = memoryCache;
         _cacheOptions = cacheOptions.Value;
+        _rateLimitOptions = rateLimitOptions.Value;
         _mapper = mapper;
     }
 
@@ -41,17 +44,25 @@ public class HackerNewsService : IHackerNewsService
             return new List<StoryDto>();
         }
 
-        var stories = new List<Story>();
-        foreach (var id in storyIds)
+        var semaphore = new SemaphoreSlim(_rateLimitOptions.SemaphoreLimit);
+        var tasks = storyIds.Select(async id =>
         {
-            var story = await _client.GetStoryByIdAsync(id, cancellationToken);
-            if (story != null)
+            await semaphore.WaitAsync(cancellationToken);
+            try
             {
-                stories.Add(story);
+                return await _client.GetStoryByIdAsync(id, cancellationToken);
             }
-        }
+            finally
+            {
+                semaphore.Release();
+            }
+        });
 
-        var sortedStories = stories.OrderByDescending(s => s.Score).ToList();
+        var stories = (await Task.WhenAll(tasks))
+            .Where(story => story != null)
+            .ToList();
+
+        var sortedStories = stories.OrderByDescending(s => s?.Score ?? 0).ToList();
         _memoryCache.Set(CacheKey, sortedStories, TimeSpan.FromMinutes(_cacheOptions.ExpirationMinutes));
         
         return _mapper.Map<List<StoryDto>>(sortedStories.Take(pageSize));
