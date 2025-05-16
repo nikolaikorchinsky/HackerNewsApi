@@ -4,21 +4,11 @@ WORKDIR /src
 
 # Copy csproj and restore as distinct layers
 COPY *.sln ./
-COPY HackerNewsApi/*.csproj ./HackerNewsApi/
-#COPY HackerNewsTests/*.csproj ./HackerNewsTests/
-COPY HackerNewsApi/* ./HackerNewsApi/
+COPY *.csproj ./
 RUN dotnet restore
 
-# Copy the rest of the source code
-COPY . .
-
-# Run tests
-#WORKDIR /src/HackerNewsTests
-#RUN dotnet test --no-restore --logger:"trx;LogFileName=test_results.trx"
-
-# Build the application
-WORKDIR /src/HackerNewsApi
-RUN dotnet publish -c Release -o /app/publish --no-restore
+COPY . ./
+RUN dotnet publish HackerNewsApi.csproj -c Release -o /app/publish
 
 # Use the official .NET 8 ASP.NET runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
@@ -29,6 +19,7 @@ COPY --from=build /app/publish .
 EXPOSE 80
 
 # Set environment variables if needed
-# ENV ASPNETCORE_URLS=http://+:80
+ ENV ASPNETCORE_URLS=http://+:80
+ ENV ASPNETCORE_ENVIRONMENT=Development
 
 ENTRYPOINT ["dotnet", "HackerNewsApi.dll"]
